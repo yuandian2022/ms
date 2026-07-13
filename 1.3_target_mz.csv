@@ -1,0 +1,34 @@
+﻿Polarity,VOC,Protonated Formula,RMM
+pos,Decanal,C10H20OH+,157.15869
+pos,Nonanal,C9H18OH+,143.14304
+pos,Octanal,C8H16OH+,129.12739
+pos,Hexanoic Acid,C6H12O2H+,117.09101
+pos,Heptanal,C7H14OH+,115.11174
+pos,Valeric Acid,C5H10O2H+,103.07536
+pos,Hexanal,C6H12OH+,101.09609
+pos,Butyric Acid,C4H8O2H+,89.05971
+pos,Pentanal,C5H10OH+,87.08044
+pos,1-Butanol,C4H9OHH+,75.08044
+pos,Propinonic Acid,C3H6O2H+,75.04406
+pos,Butanal,C4H8OH+,73.06479
+pos,Isoprene,C5H8H+,69.06988
+pos,2-Propanol ,C3H8OH+,61.06479
+pos,Acetic Acid,C2H4O2H+,61.02841
+"pos","Acetone, Propanal",C3H6OH+,59.04914
+neg,Acetone,C3H5O-,57.03459
+neg,Propanal,C3H5O-,57.03459
+neg,Acetic Acid,C2H3O2-,59.0133
+neg,Isoprene,C5H7-,67.05478
+neg,Propinonic Acid,C3H5O2-,73.02895
+neg,Pentanal,C5H9O-,85.06589
+neg,Butyric Acid,C4H7O2-,87.0446
+neg,Butanal,C4H7O-,71.05024
+neg,Hexanal,C6H11O-,99.08154
+neg,Heptanal,C7H13O-,113.09719
+neg,Octanal,C8H15O-,127.11284
+neg,Nonanal,C9H17O-,141.12849
+neg,Decanal,C10H19O-,155.14414
+neg,Valeric Acid,C5H9O2-,101.06025
+neg,Hexanoic Acid,C6H11O2-,115.0759
+neg,2-Propanol,C3H7O-,59.05024
+neg,1-Butanol,C4H9O-,73.06589

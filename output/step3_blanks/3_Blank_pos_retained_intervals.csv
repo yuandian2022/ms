@@ -1,0 +1,2 @@
+﻿filename,date,sample_id,ion,status,crop_rule,raw_rt_start_min,raw_rt_end_min,retained_rt_start_min,retained_rt_end_min,n_scans_raw,n_scans_retained,mzml_start_time
+04_05_2026_FASTING_B1_pos.mzML,04_05_2026,1,pos,ok,,0.009450628,1.2137606,0.009450628,1.2137606,128,128,2026-05-04T05:57:35Z

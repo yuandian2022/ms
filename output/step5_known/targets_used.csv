@@ -1,0 +1,34 @@
+﻿target_id,ion,compound,target_mz
+pos_Decanal,pos,Decanal,157.15869
+pos_Nonanal,pos,Nonanal,143.14304
+pos_Octanal,pos,Octanal,129.12739
+pos_Hexanoic_Acid,pos,Hexanoic Acid,117.09101
+pos_Heptanal,pos,Heptanal,115.11174
+pos_Valeric_Acid,pos,Valeric Acid,103.07536
+pos_Hexanal,pos,Hexanal,101.09609
+pos_Butyric_Acid,pos,Butyric Acid,89.05971
+pos_Pentanal,pos,Pentanal,87.08044
+pos_1-Butanol,pos,1-Butanol,75.08044
+pos_Propinonic_Acid,pos,Propinonic Acid,75.04406
+pos_Butanal,pos,Butanal,73.06479
+pos_Isoprene,pos,Isoprene,69.06988
+pos_2-Propanol,pos,2-Propanol,61.06479
+pos_Acetic_Acid,pos,Acetic Acid,61.02841
+"pos_Acetone,_Propanal",pos,"Acetone, Propanal",59.04914
+neg_Acetone,neg,Acetone,57.03459
+neg_Propanal,neg,Propanal,57.03459
+neg_Acetic_Acid,neg,Acetic Acid,59.0133
+neg_Isoprene,neg,Isoprene,67.05478
+neg_Propinonic_Acid,neg,Propinonic Acid,73.02895
+neg_Pentanal,neg,Pentanal,85.06589
+neg_Butyric_Acid,neg,Butyric Acid,87.0446
+neg_Butanal,neg,Butanal,71.05024
+neg_Hexanal,neg,Hexanal,99.08154
+neg_Heptanal,neg,Heptanal,113.09719
+neg_Octanal,neg,Octanal,127.11284
+neg_Nonanal,neg,Nonanal,141.12849
+neg_Decanal,neg,Decanal,155.14414
+neg_Valeric_Acid,neg,Valeric Acid,101.06025
+neg_Hexanoic_Acid,neg,Hexanoic Acid,115.0759
+neg_2-Propanol,neg,2-Propanol,59.05024
+neg_1-Butanol,neg,1-Butanol,73.06589
