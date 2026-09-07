@@ -53,6 +53,8 @@ A consolidated pipeline for processing **SESI-HRMS breath data** from a fasting 
   │  Known m/z    │           │  Untargeted   │
   │  Trend Plots  │           │  Screening    │
   └───────────────┘           └───────────────┘
+
+
 ```
 
 ## Pipeline Steps
@@ -63,7 +65,7 @@ A consolidated pipeline for processing **SESI-HRMS breath data** from a fasting 
 | 3 | `--step3` | Process blank (background) mzML files; apply manual crop rules; export retained RT intervals |
 | 4 | `--step4` | Extract `startTimeStamp` from breath/blank mzML files (using intervals from steps 2+3); produce detection-time CSVs |
 | 5 | `--step5` | Extract known target m/z intensities; nearest-blank subtraction; dual-panel fasting-trend plots (relative intensity + % change) |
-| 6 | `--step6` | Untargeted screening: 5 ppm hierarchical m/z clustering → sample×feature matrix → per-subject linear regression → BH-FDR correction → consistent-trend reporting + volcano plot |
+| 6 | `--step6` | Untargeted screening: 5 ppm hierarchical m/z clustering (cluster representative = m/z of the strongest peak in each cluster) → sample×feature matrix → per-subject linear regression → BH-FDR correction → consistent-trend reporting + volcano plot |
 
 > **Note:** Steps 1–6 correspond to the manuscript analysis workflow. Step 1 (data preparation) involves manual file organisation and CSV creation; it is not automated by this script.
 
@@ -87,7 +89,7 @@ A consolidated pipeline for processing **SESI-HRMS breath data** from a fasting 
 │
 ├── Exhalion/                *.txt — exhalion pressure recordings
 │
-└── output/                  ★ All pipeline outputs (auto-created, gitignored)
+└── output/                  ★ All pipeline outputs (auto-created; current results are tracked in the repo)
     ├── step2_intervals/
     ├── step3_blanks/
     ├── step4_detection/
@@ -119,7 +121,7 @@ pip install -r requirements.txt
 python breath_analysis.py --all
 ```
 
-All output will appear under `output/`.  The `output/` directory is gitignored — it is recreated on every run.
+All output will appear under `output/`.  Re-running a step overwrites its own output files in place (Pandas `to_csv` / `fig.savefig` default behaviour).
 
 ## Usage
 
@@ -195,7 +197,7 @@ All paths below are relative to the project root (or `--base-dir`).
 
 ## Output Files
 
-All output is written under `output/` (configurable with `--output-dir`). This directory is gitignored.
+All output is written under `output/` (configurable with `--output-dir`). Current results are tracked in the repository.
 
 ### Step 2 — `output/step2_intervals/`
 
@@ -239,16 +241,18 @@ All output is written under `output/` (configurable with `--output-dir`). This d
 | `00_run_summary.csv` | Key metrics (sample count, feature count, etc.) |
 | `01_sample_qc.csv` | Per-sample extraction QC |
 | `01_scan_peak_relative_long.csv` | Raw scan-level peaks (m/z, intensity, relative intensity) |
-| `02_mz_5ppm_clusters.csv` | m/z → feature cluster mapping (5 ppm) |
+| `02_mz_5ppm_clusters.csv` | m/z → feature cluster mapping (5 ppm); `cluster_mz` is the m/z of the member with the highest summed intensity across all scans (representative m/z) |
 | `03_cluster_feature_sample_matrix.csv` | Sample × feature matrix |
 | `03_feature_presence_filter_summary.csv` | Feature presence statistics |
 | `04_subject_feature_linear_regression.csv` | Per-subject, per-feature regression results |
 | `05_consistent_trend_regression_rows.csv` | Regression rows passing FDR + direction-consistency filter |
 | `05_consistent_trend_summary.csv` | Feature-level summary of consistent trends (with `rank_score`) |
 | `06_plot_index.csv` | Index of individual feature trend plots |
-| `07_volcano_plot.png` | Volcano plot (mean slope vs −log10 p-value) |
-| `08_final_volcano_data.csv` | Volcano-ready data with derived columns (`label`, `neg_log10_max_pvalue_bh`, `abs_mean_slope`) |
+| `07_volcano_plot.png` | Volcano plot (maximum slope across subjects vs −log10 max BH-adjusted p-value). Only generated when regression produces ≥1 row. |
+| `08_volcano_data.csv` | Volcano-ready data with derived columns (`label`, `neg_log10_max_pvalue_bh`, `abs_mean_slope`). Only generated when ≥1 consistent feature is found. |
 | `plots_linear_regression/*.png` | Per-feature dual-panel plots (intensity + % change) for top features |
+
+> **Note:** Files `07_volcano_plot.png` and `08_volcano_data.csv` are only written when regression has at least one row (`MIN_SAMPLES_PER_SUBJECT` samples with ≥2 distinct detection times per subject). With single-sample or single-time-point data, the previous PNG/CSV may remain on disk if not deleted manually.
 
 ## Configuration
 
