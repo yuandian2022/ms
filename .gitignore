@@ -1,0 +1,6 @@
+# Python
+__pycache__/
+*.pyc
+
+# Local backups
+output/step6_unknown/plots_linear_regression_old_meanmz/

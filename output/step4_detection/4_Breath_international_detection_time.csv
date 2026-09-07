@@ -1,2 +1,2 @@
 ﻿filename,source_interval_csv,filename_date,subject,sample_id,ion,international_detection_time,international_detection_date,international_detection_time_only,raw_startTimeStamp,mzml_path,status
-25_03_2026_FASTING_S1_001_pos.mzML,2_Breath_intervals_trimmed_pos.csv,25_03_2026,S1,1,pos,2026-03-25T06:59:05+00:00,2026-03-25,06:59:05,2026-03-25T06:59:05Z,/mnt/metadata/wcc/Fasting/BreathStudy/ms_analysis/ms/centroid_MS/Breath/25_03_2026_FASTING_S1_001_pos.mzML,ok
+25_03_2026_FASTING_S1_001_pos.mzML,2_Breath_intervals_trimmed_pos.csv,25_03_2026,S1,1,pos,2026-03-25T06:59:05+00:00,2026-03-25,06:59:05,2026-03-25T06:59:05Z,E:\Users\yuandian\Desktop\ms\centroid_MS\Breath\25_03_2026_FASTING_S1_001_pos.mzML,ok
