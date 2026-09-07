@@ -1027,25 +1027,34 @@ def _hierarchical_cluster_1d(values, distance_threshold):
             labels[start[idx]:end[idx] + 1] = lbl
         idx = right_nbr[idx]
     return labels
-
-
+ 
 def _build_mz_clusters(scan_peak_df, ppm):
     rows = []
     for ion, ion_df in scan_peak_df.groupby("ion"):
-        mz_vals = np.sort(ion_df["mz_4dp"].dropna().unique().astype(float))
+        mz_vals = np.sort(
+            ion_df["mz_4dp"].dropna().unique().astype(float))
         if mz_vals.size == 0:
             continue
         log_mz = np.log(mz_vals)
-        labels = _hierarchical_cluster_1d(log_mz, math.log1p(ppm * 1e-6))
+        labels = _hierarchical_cluster_1d(
+            log_mz,
+            math.log1p(ppm * 1e-6)
+        )
         for idx, lbl in enumerate(np.unique(labels), start=1):
             members = mz_vals[labels == lbl]
-            cmz = float(np.mean(members))
+            member_df = ion_df[ion_df["mz_4dp"].isin(members)]
+            mz_intensity = (
+                member_df.groupby("mz_4dp")["intensity"]
+                .sum())
+            cmz = float(mz_intensity.idxmax())
             fid = f"{ion}_mz_{cmz:.4f}_{idx:05d}"
             for member in members:
-                rows.append({"ion": ion, "mz_4dp": float(member),
-                             "feature_id": fid, "cluster_mz": cmz})
+                rows.append({
+                    "ion": ion,
+                    "mz_4dp": float(member),
+                    "feature_id": fid,
+                    "cluster_mz": cmz})
     return pd.DataFrame(rows)
-
 
 def _build_sample_feature_matrix(scan_peak_df, clusters, sample_meta, qc):
     peaks = scan_peak_df.merge(clusters, on=["ion", "mz_4dp"], how="left")
@@ -1213,49 +1222,42 @@ def _summarize_consistent_trends(regression):
             ["rank_score", "mean_abs_rvalue"], ascending=False)
     return kept_df, summary
 
-
 def _volcano_plot(regression, results_dir):
     if regression.empty:
         return
     feat_stats = regression.groupby(
-        ["feature_id", "ion", "cluster_mz"], as_index=False).agg(
-            n_subject_regressions=("subject", "nunique"),
-            n_significant_subjects=("significant_bh", "sum"),
-            mean_slope=("slope", "mean"),
-            min_pvalue_bh=("pvalue_bh", "min"),
-            max_abs_rvalue=("rvalue", lambda x: x.abs().max()))
-    feat_stats["neg_log10_min_pvalue_bh"] = -np.log10(
-        feat_stats["min_pvalue_bh"].clip(lower=1e-300))
+        ["feature_id", "ion", "cluster_mz"], as_index=False
+    ).agg(
+        n_subject_regressions=("subject", "nunique"),
+        n_significant_subjects=("significant_bh", "sum"),
+        max_slope=("slope", "max"),
+        max_pvalue_bh=("pvalue_bh", "max"),
+        max_abs_rvalue=("rvalue", lambda x: x.abs().max()))
+    feat_stats["neg_log10_max_pvalue_bh"] = -np.log10(
+        feat_stats["max_pvalue_bh"].clip(lower=1e-300))
     feat_stats["trend_direction"] = np.where(
-        feat_stats["mean_slope"] > 0, "increase",
-        np.where(feat_stats["mean_slope"] < 0, "decrease", "flat"))
+        feat_stats["max_slope"] > 0, "increase",
+        np.where(feat_stats["max_slope"] < 0, "decrease", "flat"))
     feat_stats["significant_any"] = feat_stats["n_significant_subjects"].gt(0)
     feat_stats["group"] = np.where(
-        feat_stats["significant_any"], feat_stats["trend_direction"],
+        feat_stats["significant_any"],
+        feat_stats["trend_direction"],
         "not_significant")
-
     fig, ax = plt.subplots(figsize=(12, 9))
-    colors = {"increase": "#d62728", "decrease": "#1f77b4",
-              "flat": "#7f7f7f", "not_significant": "#bdbdbd"}
+    colors = {"increase": "#d62728", "decrease": "#1f77b4", "flat": "#7f7f7f", "not_significant": "#bdbdbd"}
     for grp_name, grp_df in feat_stats.groupby("group"):
-        ax.scatter(grp_df["mean_slope"], grp_df["neg_log10_min_pvalue_bh"],
-                   s=45, c=colors.get(grp_name, "#7f7f7f"),
-                   alpha=0.78 if grp_name != "not_significant" else 0.45,
-                   edgecolors="none", label=grp_name.replace("_", " "))
-    ax.axhline(-np.log10(FDR_ALPHA), color="black", linewidth=1.2,
-               linestyle=(0, (6, 4)), alpha=0.7)
+        ax.scatter(grp_df["max_slope"],grp_df["neg_log10_max_pvalue_bh"], s=45, c=colors.get(grp_name, "#7f7f7f"), 
+                   alpha=0.78 if grp_name != "not_significant" else 0.45, edgecolors="none", label=grp_name.replace("_", " "))
+    ax.axhline(-np.log10(FDR_ALPHA), color="black", linewidth=1.2, linestyle=(0, (6, 4)),  alpha=0.7)
     ax.axvline(0, color="black", linewidth=1.0, alpha=0.45)
-    ax.set_xlabel("Mean slope across subjects", fontsize=22, fontweight="bold")
-    ax.set_ylabel("-log10(min BH-FDR p-value)", fontsize=22, fontweight="bold")
-    ax.set_title("Feature significance volcano plot", fontsize=22,
-                 fontweight="bold")
+    ax.set_xlabel("Maximum slope across subjects", fontsize=22, fontweight="bold")
+    ax.set_ylabel("-log10(max BH-adjusted p-value)", fontsize=22, fontweight="bold")
+    ax.set_title("Feature significance volcano plot", fontsize=22, fontweight="bold")
     ax.tick_params(axis="both", labelsize=18)
     ax.legend(loc="best", fontsize=13, frameon=False)
     fig.tight_layout()
-    fig.savefig(results_dir / "07_volcano_plot.png", dpi=300,
-                bbox_inches="tight")
+    fig.savefig(results_dir / "07_volcano_plot.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
-
 
 def run_step6_unknown_screening(processed_dir, output_dir, ion_mode="pos"):
     output_dir.mkdir(parents=True, exist_ok=True)
